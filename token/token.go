@@ -32,6 +32,31 @@ var keywords = map[string]TokenType{
 	"let": LET,
 }
 
+var symbols = map[byte]TokenType{
+	'=': ASSIGN,
+	'+': PLUS,
+	',': COMMA,
+	';': SEMICOLON,
+	'(': LPAREN,
+	')': RPAREN,
+	'{': LBRACE,
+	'}': RBRACE,
+	0:   EOF,
+}
+
+func IsSymbol(c byte) bool {
+	_, ok := symbols[c]
+	return ok
+}
+
+func NewSymbol(c byte) Token {
+	t := symbols[c]
+	if c == 0 {
+		return Token{Type: t, Literal: ""}
+	}
+	return Token{Type: t, Literal: string(c)}
+}
+
 func (t *Token) SetType() {
 	if kw, ok := keywords[t.Literal]; ok {
 		t.Type = kw

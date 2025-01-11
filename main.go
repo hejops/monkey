@@ -5,7 +5,7 @@ package main
 //
 // •  C-like syntax
 // •  variable bindings
-// •  integers and booleans
+// •  integers and booleans (no other numeric types!)
 // •  arithmetic expressions
 // •  built-in functions
 // •  first-class and higher-order functions
