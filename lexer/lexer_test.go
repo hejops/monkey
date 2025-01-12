@@ -9,7 +9,9 @@ import (
 )
 
 func TestSymbols(t *testing.T) {
-	lexer := New(`=+(){},;`)
+	// listed in order of implementation
+	input := `=+(){},;-/*<>!`
+	lexer := New(input)
 
 	chars := []struct {
 		_type token.TokenType
@@ -23,10 +25,20 @@ func TestSymbols(t *testing.T) {
 		{token.RBRACE, "}"},
 		{token.COMMA, ","},
 		{token.SEMICOLON, ";"},
+		{token.MINUS, "-"},
+		{token.DIVIDE, "/"},
+		{token.MULTIPLY, "*"},
+		{token.LESS, "<"},
+		{token.GREATER, ">"},
+		{token.NOT, "!"},
 	}
 
-	for _, tt := range chars {
+	for i := 0; ; i++ {
 		tok := lexer.NextToken()
+		if tok.Type == token.EOF {
+			break
+		}
+		tt := chars[i]
 		assert.Equal(t, tok.Type, tt._type)
 		assert.Equal(t, tok.Literal, tt.s)
 	}
@@ -54,7 +66,7 @@ func TestSingleAssignment(t *testing.T) {
 	}
 }
 
-func TestBasicProgram(t *testing.T) {
+func TestFunction(t *testing.T) {
 	lexer := New(`let five = 5;
 let ten = 10;
 let add = fn(x, y) {
@@ -105,6 +117,61 @@ let result = add(five, ten);
 		{token.COMMA, ","},
 		{token.IDENT, "ten"},
 		{token.RPAREN, ")"},
+		{token.SEMICOLON, ";"},
+
+		{token.EOF, ""},
+	} // }}}
+
+	for _, tt := range tokens {
+		tok := lexer.NextToken()
+		assert.Equal(t, tok.Type, tt._type)
+		assert.Equal(t, tok.Literal, tt.s)
+	}
+}
+
+func TestCondition(t *testing.T) {
+	lexer := New(`if (5 < 10) {
+	return true;
+} else {
+	return false;
+}
+1 == 1;
+1 != 2;
+`)
+
+	tokens := []struct { // {{{
+		_type token.TokenType
+		s     string
+	}{
+		{token.IF, "if"},
+		{token.LPAREN, "("},
+		{token.INT, "5"},
+		{token.LESS, "<"},
+		{token.INT, "10"},
+		{token.RPAREN, ")"},
+
+		{token.LBRACE, "{"},
+		{token.RETURN, "return"},
+		{token.TRUE, "true"},
+		{token.SEMICOLON, ";"},
+		{token.RBRACE, "}"},
+
+		{token.ELSE, "else"},
+
+		{token.LBRACE, "{"},
+		{token.RETURN, "return"},
+		{token.FALSE, "false"},
+		{token.SEMICOLON, ";"},
+		{token.RBRACE, "}"},
+
+		{token.INT, "1"},
+		{token.EQUAL, "=="},
+		{token.INT, "1"},
+		{token.SEMICOLON, ";"},
+
+		{token.INT, "1"},
+		{token.NOT_EQUAL, "!="},
+		{token.INT, "2"},
 		{token.SEMICOLON, ";"},
 
 		{token.EOF, ""},

@@ -16,10 +16,10 @@ import (
 // symbols: = ; ( ) , { } +
 
 type Lexer struct {
-	input    string
-	position int
-	c        byte
-	nextPos  int // for peeking
+	input    string // the human-readable string representation of a program
+	position int    // current position
+	c        byte   // character at current position
+	nextPos  int    // for peeking; generally position+1
 }
 
 func New(input string) *Lexer {
@@ -28,6 +28,8 @@ func New(input string) *Lexer {
 	return l
 }
 
+// readChar reads the current character and stores it in c. Then it advances
+// the cursor.
 func (l *Lexer) readChar() {
 	// note: nextPos is initialised to 0
 	// (why not just use l.position? kiv)
@@ -40,6 +42,15 @@ func (l *Lexer) readChar() {
 	l.nextPos += 1
 }
 
+// peekChar reads the next character without advancing the cursor.
+func (l *Lexer) peekChar() byte {
+	if l.nextPos >= len(l.input) {
+		return 0
+	} else {
+		return l.input[l.nextPos]
+	}
+}
+
 func isLetter(c byte) bool {
 	return 'a' <= c && c <= 'z' || 'A' <= c && c <= 'Z' || c == '_'
 }
@@ -48,6 +59,8 @@ func isDigit(c byte) bool {
 	return '0' <= c && c <= '9'
 }
 
+// NextToken reads tokens until an EOF is reached. It does not check for
+// correctness of a program; that is the parser's job.
 func (l *Lexer) NextToken() token.Token {
 	for unicode.IsSpace(rune(l.c)) {
 		l.readChar()
@@ -62,7 +75,21 @@ func (l *Lexer) NextToken() token.Token {
 
 	var tok token.Token
 
-	if token.IsSymbol(l.c) {
+	// special cases:
+	// = can be either = (ASSIGN) or == (EQUAL)
+	// ! can be either ! (NOT) or != (NOT_EQUAL)
+
+	if l.c == '=' && l.peekChar() == '=' {
+		tok = token.Token{Type: token.EQUAL, Literal: "=="}
+		l.readChar()
+		l.readChar()
+
+	} else if l.c == '!' && l.peekChar() == '=' {
+		tok = token.Token{Type: token.NOT_EQUAL, Literal: "!="}
+		l.readChar()
+		l.readChar()
+
+	} else if token.IsSymbol(l.c) {
 		tok = token.NewSymbol(l.c)
 		l.readChar()
 

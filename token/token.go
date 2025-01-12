@@ -1,21 +1,43 @@
 package token
 
 const (
+	// when defining a new token, make sure to include it in the
+	// corresponding map
+
 	// ILLEGAL   TokenType = "ILLEGAL"
-	ILLEGAL   = "ILLEGAL"
-	EOF       = "EOF"
-	IDENT     = "IDENT"
-	INT       = "INT"
+	ILLEGAL = "ILLEGAL"
+	EOF     = "EOF"
+	IDENT   = "IDENT"
+	INT     = "INT"
+
+	// keywords
+
+	FUNCTION = "FUNCTION"
+	LET      = "LET"
+	IF       = "IF"
+	ELSE     = "ELSE"
+	TRUE     = "TRUE"
+	FALSE    = "FALSE"
+	RETURN   = "RETURN"
+
+	// symbols (these are strings, to be consistent with the above)
+
 	ASSIGN    = "="
 	PLUS      = "+"
+	MINUS     = "-"
+	MULTIPLY  = "*"
+	DIVIDE    = "/"
 	COMMA     = ","
 	SEMICOLON = ";"
 	LPAREN    = "("
 	RPAREN    = ")"
 	LBRACE    = "{"
 	RBRACE    = "}"
-	FUNCTION  = "FUNCTION"
-	LET       = "LET"
+	LESS      = "<"
+	GREATER   = ">"
+	NOT       = "!"
+	EQUAL     = "=="
+	NOT_EQUAL = "!="
 )
 
 type (
@@ -28,19 +50,30 @@ type (
 )
 
 var keywords = map[string]TokenType{
-	"fn":  FUNCTION,
-	"let": LET,
+	"fn":     FUNCTION,
+	"let":    LET,
+	"if":     IF,
+	"else":   ELSE,
+	"true":   TRUE,
+	"false":  FALSE,
+	"return": RETURN,
 }
 
 var symbols = map[byte]TokenType{
 	'=': ASSIGN,
 	'+': PLUS,
+	'-': MINUS,
+	'*': MULTIPLY,
+	'/': DIVIDE,
 	',': COMMA,
 	';': SEMICOLON,
 	'(': LPAREN,
 	')': RPAREN,
 	'{': LBRACE,
 	'}': RBRACE,
+	'<': LESS,
+	'>': GREATER,
+	'!': NOT,
 	0:   EOF,
 }
 
