@@ -1,5 +1,7 @@
 package main
 
+import "monkey/repl"
+
 // an implementation of the Monkey programming language, as specified by
 // Thorsten Ball in "Writing an Interpreter in Go". the language features:
 //
@@ -20,4 +22,5 @@ package main
 // let foo = fn() {...}
 
 func main() {
+	repl.Start()
 }
